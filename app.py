@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -14,9 +14,42 @@ class ToDo(db.Model):
 
     def __repr__(self):
         return f"<ToDo {self.SNo} - {self.title}>"
-@app.route('/')
+    
+@app.route('/', methods=['GET', 'POST'])
 def home():
-    return render_template('index.html')
+    if request.method == 'POST':
+        title = request.form['title']
+        description = request.form['description']
+        new_todo = ToDo(title=title, description=description)
+        db.session.add(new_todo)
+        db.session.commit()
+    todos = ToDo.query.all()
+    return render_template('index.html', todos=todos)
+
+@app.route('/show')
+def show():
+    todos = ToDo.query.all()
+    print(todos)
+    return "Check console for ToDo items."
+
+@app.route('/delete/<int:sno>')
+def delete(sno):
+    todo = ToDo.query.filter_by(SNo=sno).first()
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect('/')
+
+@app.route('/edit/<int:sno>', methods=['GET', 'POST'])
+def edit(sno):  
+    todo = ToDo.query.filter_by(SNo=sno).first()
+    if request.method == 'POST':
+        todo.title = request.form['title']
+        todo.description = request.form['description']
+        db.session.commit()
+        return "Updated Successfully"
+    return render_template('edit.html', todo=todo)
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
     app.run(debug=True)
