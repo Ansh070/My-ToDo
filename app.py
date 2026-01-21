@@ -46,10 +46,10 @@ def edit(sno):
         todo.title = request.form['title']
         todo.description = request.form['description']
         db.session.commit()
-        return "Updated Successfully"
+        return redirect('/')
     return render_template('edit.html', todo=todo)
 
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

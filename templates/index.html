@@ -4,105 +4,74 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>My ToDo</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>My ToDo | Tech Edition</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@600;700&display=swap"
+        rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="/">ToDo</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                            Dropdown
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                    </li>
-                </ul>
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-                    <button class="btn btn-outline-success" type="submit">Search</button>
-                </form>
-            </div>
+    <header class="tech-header">
+        <a class="brand" href="/">MY TODO_</a>
+        <nav class="nav-links">
+            <a href="/">HOME</a>
+            <a href="#">ARCHIVE</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Add ToDo Form -->
+        <div class="glass-form">
+            <h2 style="margin-bottom: 2rem; font-family: 'Orbitron', sans-serif; color: var(--accent-color);">NEW TASK_
+            </h2>
+            <form method="POST" action="/">
+                <div class="form-group">
+                    <label for="todo-title" class="form-label">Title</label>
+                    <input type="text" class="form-control" name="title" id="todo-title"
+                        placeholder="Enter task title..." required autocomplete="off">
+                </div>
+                <div class="form-group">
+                    <label for="todo-description" class="form-label">Description</label>
+                    <input type="text" class="form-control" name="description" id="todo-description"
+                        placeholder="Enter task details..." autocomplete="off">
+                </div>
+                <button type="submit" class="btn btn-primary">Initialize Task</button>
+            </form>
         </div>
-    </nav>
-    <div class="container">
-        <form method="POST" action="/">
-            <div class="mb-3">
-                <label for="todo-title" class="form-label">ToDo Title</label>
-                <input type="text" class="form-control" name="title" id="todo-title" aria-describedby="emailHelp">
-            </div>
-            <div class="mb-3">
-                <label for="todo-description" class="form-label">Description</label>
-                <input type="text" class="form-control" name="description" id="todo-description">
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-    </div>
-    <div class="container">
+
+        <!-- ToDo Grid -->
+        <h3 style="margin-bottom: 1.5rem; font-family: 'Orbitron', sans-serif;">ACTIVE PROTOCOLS_</h3>
 
         {% if todos|length == 0 %}
-        <div class="alert alert-warning" role="alert">
-            No ToDo items found. Please add some!
+        <div class="empty-state">
+            <div class="empty-icon">NULL</div>
+            <p>No active protocols found. Initialize new task.</p>
         </div>
         {% else %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">SNo</th>
-                    <th scope="col">Title</th>
-                    <th scope="col">Description</th>
-                    <th scope="col">Date Created</th>
-                    <th scope="col">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-
-                {% for ToDo in todos %}
-                <tr>
-                    <th scope="row">{{ loop.index }}</th>
-                    <td>{{ ToDo.title }}</td>
-                    <td>{{ ToDo.description }}</td>
-                    <td>{{ ToDo.date_created }}</td>
-                    <td><a href="/edit/{{ ToDo.SNo }}" type="button" class="btn btn-secondary">Edit</button></td>
-                    <td><a href="/delete/{{ ToDo.SNo }}" type="button" class="btn btn-danger">Delete</button></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
+        <div class="todo-grid">
+            {% for todo in todos %}
+            <div class="todo-card" style="--delay: {{ loop.index0 * 0.1 }}s">
+                <div class="todo-header">
+                    <span class="todo-index">#{{ loop.index }}</span>
+                    <span class="todo-meta">{{ todo.date_created.strftime('%Y-%m-%d') }}</span>
+                </div>
+                <h4 class="todo-title">{{ todo.title }}</h4>
+                <p class="todo-desc">{{ todo.description }}</p>
+                <div class="todo-actions">
+                    <a href="/edit/{{ todo.SNo }}" class="btn btn-primary btn-sm">Edit</a>
+                    <a href="/delete/{{ todo.SNo }}" class="btn btn-danger btn-sm">Term</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
         {% endif %}
-
-
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
-        crossorigin="anonymous"></script>
+
 </body>
 
 </html>
